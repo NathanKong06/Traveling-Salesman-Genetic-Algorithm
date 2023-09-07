@@ -2,6 +2,22 @@ import random
 import copy
 import math
 
+def CreateOutput(path):
+    """
+    This function creates output.txt or overwrites if already exists with the solution.
+    Inputs:
+        Path: Path to be output in the file.
+    Outputs:
+        text file: Text file in required format of path length and path
+    """
+    with open ("output.txt","w") as output_file:
+        output_file.write(str(CalculateEuclideanFitness(path)))
+        output_file.write("\n")
+        for index,city in enumerate(path):
+            output_file.write(city)
+            if index != len(path) - 1:
+                output_file.write("\n")
+
 def CreateRankList(population):
     """
     This function creates the rank list.
@@ -17,7 +33,7 @@ def CreateRankList(population):
 
 def CalculateEuclideanFitness(path):
     """
-    This function acts as a fitness function and returns the total euclidean distance of a given path.
+    This function acts as a fitness function and returns the total euclidean distance of a given path (negative for fitness function)
     Inputs:
         Path: A posible path
     Outputs:
@@ -26,7 +42,7 @@ def CalculateEuclideanFitness(path):
     total_distance = 0
     for index in range(len(path) - 1):
         total_distance = total_distance + math.dist(list(map(int,path[index].split(" "))),list(map(int,path[index+1].split(" ")))) 
-        #Split city in path by empty space, convert every string to ingeter by map, convert to list, calculate euclidean distance
+        #Split city in path by empty space, convert every string to integer by map, convert to list, calculate euclidean distance
     return total_distance
 
 def CreateMatingPool(population, RankList):
@@ -38,10 +54,19 @@ def CreateMatingPool(population, RankList):
     Outputs:
         list: A list of populations selected for mating (List contains paths)
     """
-    mating_pool = []
-
-
-    return mating_pool
+    mating_pool = []    
+    sum = 0.0
+    partial_sum = 0.0
+    for index in range(len(RankList)):
+        sum = sum + RankList[index][1]
+    random_num = random.uniform(sum,0.0)
+    for index,tup in enumerate(RankList):
+        partial_sum = partial_sum + tup[1]
+        if partial_sum >= random_num:
+            mating_pool.append(population[index])
+            return mating_pool 
+            # Need to figure this part out, currently only creating one parent at the moment
+    # return mating_pool
 
 def CreateInitialPopulation(size,cities):
     """
@@ -84,6 +109,7 @@ def main():
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
+    print(mating_pool)
 
 if __name__ == "__main__":
     main()
