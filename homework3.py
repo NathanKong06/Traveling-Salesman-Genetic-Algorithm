@@ -8,12 +8,12 @@ def CreateRankList(population):
     Inputs:
         Population: List of list of paths
     Outputs:
-        float: A list of tuples of index and fitness scores sorted in ascending order.
+        float: A list of tuples of index and fitness scores sorted in descending order.
     """
     rank_list = []
     for index,path in enumerate(population):
-        rank_list.append((index,CalculateEuclideanFitness(path)))
-    return sorted(rank_list,key = lambda x:x[1])
+        rank_list.append((index,-CalculateEuclideanFitness(path)))
+    return sorted(rank_list,key = lambda x:x[1], reverse = True)
 
 def CalculateEuclideanFitness(path):
     """
@@ -34,7 +34,7 @@ def CreateMatingPool(population, RankList):
     This function defines the best fit individuals and selects them for breeding. Implements a roulette wheel-based selection which is a widely used and most efficient method for selecting parents.
     Inputs:
         Population: A list of paths from which the mating pool is to be created
-        RankList: A list of tuples of index and fitness scores sorted in ascending order.
+        RankList: A list of tuples of index and fitness scores sorted in descending order.
     Outputs:
         list: A list of populations selected for mating (List contains paths)
     """
