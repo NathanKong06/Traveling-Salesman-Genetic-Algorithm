@@ -2,6 +2,97 @@ import random
 import copy
 import math
 
+def FindBestAnswer(mating_pool):
+    """
+    Looks for the shortest path in the remaining mating pool after crossover
+    Inputs:
+        mating_pool: Initial mating pool
+    Outputs:
+        list: Best path remaining
+    """
+    best_distance = CalculateEuclideanFitness(mating_pool[0])
+    best_path = mating_pool[0]
+    for path in mating_pool:
+        if CalculateEuclideanFitness(path) < best_distance:
+            best_distance = CalculateEuclideanFitness(path)
+            best_path = path
+    return best_path
+
+def PerformCrossOver(mating_pool):
+    """
+    Performs cross over and returns updated mating pool
+    Inputs:
+        mating_pool: Initial mating pool
+    Outputs:
+        list: Updated mating pool with child and without parents (smaller)
+    """
+    first_parent = mating_pool[0]
+    second_parent = mating_pool[1]
+    first_index = math.floor(len(first_parent)/3) - 1
+    second_index = first_index + math.ceil(len(first_parent)/3) - 1
+    child = CrossOver(first_parent,second_parent,first_index,second_index) 
+    mating_pool[0] = child
+    mating_pool.remove(second_parent)
+    return mating_pool
+    
+
+def CheckValidPath(path, parent):
+    """
+    Checks and corrects path
+    Inputs:
+        path: Path to check
+        parent: Parent to compare and fix path with
+    Outputs:
+        list: Same path or corrected path
+    """
+    count = {}
+    for city in parent:
+        count[city] = 1
+
+    for path_city in path:
+        count[path_city] = count[path_city] - 1
+
+    if all(element == 0 for element in list(count.values())):
+        path.append(path[0])
+        return path 
+    else:
+        for city,value in count.items():
+            if value == -1:
+                repeated_city = city
+                break
+        for city,value in count.items():
+            if value == 1:
+                unused_city = city
+                break
+        repeated = 0
+        for i in range(len(path)):
+            if path[i] == repeated_city:
+                repeated = repeated + 1
+                if repeated == 2:
+                    path[i] = unused_city
+                    break
+        path.append(path[0])
+        return path
+        
+def CrossOver(parent1, parent2, start_index, end_index):
+    """
+    Implements a two-point crossover. Choose the subarray from parent1 starting at start_index and ending at end_index. Choose the rest of the sequence from parent2. 
+    Inputs:
+        parent1: First argument of the function: A list containing the random sequence of cities for the salesman to follow
+        parent2: Second argument of the function: A list containing the random sequence of cities for the salesman to follow
+        start_index: Start index of the SUBARRAY to be chosen from parent 1
+        end_index: End index of the SUBARRAY to be chosen from parent 1
+    Outputs:
+        list: Return child after performing the crossover (also a list containing a valid sequence of cities)
+    """
+    begin_sub_array = parent2[0:start_index]
+    mid_sub_array = parent1[start_index:end_index+1]
+    end_sub_array = parent2[end_index+1:-1]
+    sub_array = begin_sub_array + mid_sub_array + end_sub_array 
+    sub_array.append(parent2[-1])
+    sub_array = CheckValidPath(sub_array[:-1], parent2[:-1])
+    return sub_array
+
 def CreateOutput(path):
     """
     This function creates output.txt or overwrites if already exists with the solution.
@@ -56,17 +147,18 @@ def CreateMatingPool(population, RankList):
     """
     mating_pool = []    
     sum = 0.0
-    partial_sum = 0.0
+    partial_sum = sum
     for index in range(len(RankList)):
         sum = sum + RankList[index][1]
-    random_num = random.uniform(sum,0.0)
-    for index,tup in enumerate(RankList):
-        partial_sum = partial_sum + tup[1]
-        if partial_sum >= random_num:
-            mating_pool.append(population[index])
-            return mating_pool 
-            # Need to figure this part out, currently only creating one parent at the moment
-    # return mating_pool
+    for _ in range(len(population)//2):
+        random_num = random.uniform(sum,0.0)
+        for index,tup in enumerate(RankList):
+            partial_sum = partial_sum - tup[1]
+            if partial_sum >= random_num:
+                mating_pool.append(population[index])
+                partial_sum = sum
+                break
+    return mating_pool
 
 def CreateInitialPopulation(size,cities):
     """
@@ -104,12 +196,15 @@ def read_inputs():
     return all_cities
 
 def main():
-    size = 1000
+    size = 10000
     cities = read_inputs()
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    print(mating_pool)
-
+    for _ in range(4500):
+        mating_pool = PerformCrossOver(mating_pool)
+    best_path = FindBestAnswer(mating_pool)
+    CreateOutput(best_path)
+    
 if __name__ == "__main__":
     main()
