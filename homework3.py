@@ -1,6 +1,7 @@
 import random
 import copy
 import math
+import numpy as np
 
 def FindBestAnswer(mating_pool):
     """
@@ -132,7 +133,9 @@ def CalculateEuclideanFitness(path):
     """
     total_distance = 0
     for index in range(len(path) - 1):
-        total_distance = total_distance + math.dist(list(map(int,path[index].split(" "))),list(map(int,path[index+1].split(" ")))) 
+        first_city = np.array(list(map(int,(path[index].split(" ")))))
+        second_city =np.array(list(map(int,(path[index+1].split(" ")))))
+        total_distance = total_distance + np.linalg.norm(first_city-second_city)
         #Split city in path by empty space, convert every string to integer by map, convert to list, calculate euclidean distance
     return total_distance
 
@@ -196,12 +199,12 @@ def read_inputs():
     return all_cities
 
 def main():
-    size = 10000
+    size =  25000
     cities = read_inputs()
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    for _ in range(4500):
+    for _ in range(1000):
         mating_pool = PerformCrossOver(mating_pool)
     best_path = FindBestAnswer(mating_pool)
     CreateOutput(best_path)
