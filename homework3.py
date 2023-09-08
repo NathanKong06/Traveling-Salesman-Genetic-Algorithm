@@ -63,10 +63,10 @@ def CheckValidPath(path, parent):
         for city,value in count.items():
             if value == 1:
                 unused_cities.append(city)
-        for city in repeated_cities:
-            for index,value in enumerate(repeated_cities):
-                if value == city:
-                    path[index] = unused_cities[index]
+        for idx,rcity in enumerate(repeated_cities):
+            for index,pcity in enumerate(path):
+                if rcity == pcity:
+                    path[index] = unused_cities[idx]
                     break
         path.append(path[0])
         return path
@@ -195,12 +195,12 @@ def read_inputs():
     return all_cities
 
 def main():
-    size = 50000
+    size = 20
     cities = read_inputs()
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    for _ in range(10000):
+    for _ in range(1):
         mating_pool = PerformCrossOver(mating_pool)
     best_path = FindBestAnswer(mating_pool)
     CreateOutput(best_path)
