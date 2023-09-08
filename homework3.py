@@ -35,7 +35,6 @@ def PerformCrossOver(mating_pool):
     mating_pool.append(child)
     return mating_pool
     
-
 def CheckValidPath(path, parent):
     """
     Checks and corrects path
@@ -56,20 +55,18 @@ def CheckValidPath(path, parent):
         path.append(path[0])
         return path 
     else:
+        repeated_cities = []
+        unused_cities = []
         for city,value in count.items():
             if value == -1:
-                repeated_city = city
-                break
+                repeated_cities.append(city)
         for city,value in count.items():
             if value == 1:
-                unused_city = city
-                break
-        repeated = 0
-        for i in range(len(path)):
-            if path[i] == repeated_city:
-                repeated = repeated + 1
-                if repeated == 2:
-                    path[i] = unused_city
+                unused_cities.append(city)
+        for city in repeated_cities:
+            for index,value in enumerate(repeated_cities):
+                if value == city:
+                    path[index] = unused_cities[index]
                     break
         path.append(path[0])
         return path
@@ -198,12 +195,12 @@ def read_inputs():
     return all_cities
 
 def main():
-    size =  10
+    size = 50000
     cities = read_inputs()
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    for _ in range(2):
+    for _ in range(10000):
         mating_pool = PerformCrossOver(mating_pool)
     best_path = FindBestAnswer(mating_pool)
     CreateOutput(best_path)
