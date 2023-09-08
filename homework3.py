@@ -197,7 +197,7 @@ def read_inputs():
     return all_cities
 
 def main():
-    size = 30000
+    size = 23500
     cities = read_inputs()
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
