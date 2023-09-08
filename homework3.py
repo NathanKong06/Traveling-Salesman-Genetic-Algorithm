@@ -27,12 +27,14 @@ def PerformCrossOver(mating_pool):
     Outputs:
         list: Updated mating pool with child 
     """
-    first_parent = mating_pool[0]
-    second_parent = mating_pool[1]
+    first_parent = mating_pool.pop(0)
+    second_parent = mating_pool.pop(0)
     first_index = math.floor(len(first_parent)/3) - 1
     second_index = first_index + math.ceil(len(first_parent)/3) - 1
     child = CrossOver(first_parent,second_parent,first_index,second_index) 
     mating_pool.append(child)
+    mating_pool.append(first_parent)
+    mating_pool.append(second_parent)
     return mating_pool
     
 def CheckValidPath(path, parent):
@@ -195,12 +197,12 @@ def read_inputs():
     return all_cities
 
 def main():
-    size = 20
+    size = 30000
     cities = read_inputs()
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    for _ in range(1):
+    for _ in range(10000):
         mating_pool = PerformCrossOver(mating_pool)
     best_path = FindBestAnswer(mating_pool)
     CreateOutput(best_path)
