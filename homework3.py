@@ -25,15 +25,14 @@ def PerformCrossOver(mating_pool):
     Inputs:
         mating_pool: Initial mating pool
     Outputs:
-        list: Updated mating pool with child and without parents (smaller)
+        list: Updated mating pool with child 
     """
     first_parent = mating_pool[0]
     second_parent = mating_pool[1]
     first_index = math.floor(len(first_parent)/3) - 1
     second_index = first_index + math.ceil(len(first_parent)/3) - 1
     child = CrossOver(first_parent,second_parent,first_index,second_index) 
-    mating_pool[0] = child
-    mating_pool.remove(second_parent)
+    mating_pool.append(child)
     return mating_pool
     
 
@@ -116,7 +115,7 @@ def CreateRankList(population):
     Inputs:
         Population: List of list of paths
     Outputs:
-        float: A list of tuples of index and fitness scores sorted in descending order.
+        list: A list of tuples of index and fitness scores sorted in descending order.
     """
     rank_list = []
     for index,path in enumerate(population):
@@ -158,7 +157,7 @@ def CreateMatingPool(population, RankList):
         for index,tup in enumerate(RankList):
             partial_sum = partial_sum - tup[1]
             if partial_sum >= random_num:
-                mating_pool.append(population[index])
+                mating_pool.append(population[tup[0]])
                 partial_sum = sum
                 break
     return mating_pool
@@ -199,12 +198,12 @@ def read_inputs():
     return all_cities
 
 def main():
-    size =  25000
+    size =  10
     cities = read_inputs()
     initial_population = CreateInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    for _ in range(1000):
+    for _ in range(2):
         mating_pool = PerformCrossOver(mating_pool)
     best_path = FindBestAnswer(mating_pool)
     CreateOutput(best_path)
