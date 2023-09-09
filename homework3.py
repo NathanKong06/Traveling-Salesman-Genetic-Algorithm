@@ -276,12 +276,12 @@ def RandomInitialPopulationMain():
     CreateOutput(best_path)
 
 def main():
-    size = 500
+    size = 550
     cities = read_inputs()
     initial_population = CreateNearestNeighborInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    for _ in range(1000):
+    for _ in range(1100):
         mating_pool = PerformCrossOver(mating_pool)
     best_path = FindBestAnswer(mating_pool)
     CreateOutput(best_path)
