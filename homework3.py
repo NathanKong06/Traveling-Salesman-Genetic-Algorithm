@@ -3,6 +3,23 @@ import copy
 import math
 import numpy as np
 
+def MutatePath(path):
+    """
+    Mutates a path
+    Inputs:
+        path: Path to mutate
+    Outputs:
+        path: Mutated path
+    """
+    num_cities = len(path) - 1
+    random_index = -1
+    second_random_index = -1
+    while random_index == second_random_index: #Avoid same indexes
+        random_index = random.randint(1, num_cities-1) #Excluding first and last city
+        second_random_index = random.randint(1, num_cities-1)
+    path[random_index], path[second_random_index] = path[second_random_index], path[random_index] #Swap cities
+    return path
+
 def FindBestAnswer(mating_pool):
     """
     Looks for the shortest path in the remaining mating pool after crossover
@@ -35,6 +52,11 @@ def PerformCrossOver(mating_pool):
     mating_pool.append(child) #Add child to back of mating pool
     mating_pool.append(first_parent) #Re-add removed parent to back of mating pool
     mating_pool.append(second_parent) #Re-add removed parent to back of mating pool
+    mutation_rate = 1/len(mating_pool[0])
+    random_chance = random.random()
+    if random_chance < mutation_rate:
+        mutated_path = MutatePath(child)
+        mating_pool.append(mutated_path)
     return mating_pool
     
 def CheckValidPath(path, parent):
