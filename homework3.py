@@ -276,7 +276,7 @@ def RandomInitialPopulationMain():
     CreateOutput(best_path)
 
 def main():
-    size = 1000
+    size = 500
     cities = read_inputs()
     initial_population = CreateNearestNeighborInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
