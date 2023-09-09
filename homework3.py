@@ -52,9 +52,9 @@ def PerformCrossOver(mating_pool):
     mating_pool.append(child) #Add child to back of mating pool
     mating_pool.append(first_parent) #Re-add removed parent to back of mating pool
     mating_pool.append(second_parent) #Re-add removed parent to back of mating pool
-    mutation_rate = 1/len(mating_pool[0])
-    random_chance = random.random()
-    if random_chance < mutation_rate:
+    mutation_rate = 1/(len(mating_pool[0])-1) #Mutation rate is set to 1/number of cities
+    random_chance = random.random() #Random number betwen 0 and 1
+    if random_chance < mutation_rate: 
         mutated_path = MutatePath(child)
         mating_pool.append(mutated_path)
     return mating_pool
