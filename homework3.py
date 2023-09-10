@@ -169,23 +169,23 @@ def calculate_euclidean_fitness(path):
         total_distance = total_distance + np.linalg.norm(first_city-second_city)
     return total_distance
 
-def create_mating_pool(population, RankList):
+def create_mating_pool(population, rank_list):
     """
     This function defines the best fit individuals and selects them for breeding. Implements a roulette wheel-based selection which is a widely used and most efficient method for selecting parents.
     Inputs:
         Population: A list of paths from which the mating pool is to be created
-        RankList: A list of tuples of index and fitness scores sorted in descending order.
+        rank_list: A list of tuples of index and fitness scores sorted in descending order.
     Outputs:
         list: A list of populations selected for mating (List contains paths)
     """
     mating_pool = []    
     sum = 0.0
     partial_sum = sum
-    for index in range(len(RankList)): #Calculate sum of all scores (In this case large negative number due to fitness system)
-        sum = sum + RankList[index][1]
+    for index in range(len(rank_list)): #Calculate sum of all scores (In this case large negative number due to fitness system)
+        sum = sum + rank_list[index][1]
     for _ in range(len(population)//2):
         random_num = random.uniform(sum,0.0) #Random number between the sum and 0 since sum is large negative number
-        for index,tup in enumerate(RankList):
+        for index,tup in enumerate(rank_list):
             partial_sum = partial_sum - tup[1]
             if partial_sum >= random_num: #When the partial sum becomes equal to or greater than the random number, add to mating pool
                 mating_pool.append(population[tup[0]])
@@ -287,7 +287,7 @@ def random_initial_population_main():
     create_output(best_path)
 
 def main():
-    size = 550
+    size = 450
     cities = read_inputs()
     initial_population = create_nearest_neighbor_initial_population(size,cities)
     rank_list = create_rank_list(initial_population)
