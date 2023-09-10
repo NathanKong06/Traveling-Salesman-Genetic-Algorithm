@@ -3,7 +3,7 @@ import copy
 import math
 import numpy as np
 
-def FindAndWrite(mating_pool):
+def find_path_and_write(mating_pool):
     """
     Finds best solution in mating pool and outputs to file
     Inputs:
@@ -11,10 +11,10 @@ def FindAndWrite(mating_pool):
     Outputs:
         N/A
     """
-    best_path = FindBestAnswer(mating_pool)
-    CreateOutput(best_path)
+    best_path = find_best_answer(mating_pool)
+    create_output(best_path)
 
-def MutatePath(path):
+def mutate_path(path):
     """
     Mutates a path
     Inputs:
@@ -31,7 +31,7 @@ def MutatePath(path):
     path[random_index], path[second_random_index] = path[second_random_index], path[random_index] #Swap cities
     return path
 
-def FindBestAnswer(mating_pool):
+def find_best_answer(mating_pool):
     """
     Looks for the shortest path in the remaining mating pool after crossover
     Inputs:
@@ -39,15 +39,15 @@ def FindBestAnswer(mating_pool):
     Outputs:
         list: Best path remaining
     """
-    best_distance = CalculateEuclideanFitness(mating_pool[0]) #Set best_distance to the length of first path
+    best_distance = calculate_euclidean_fitness(mating_pool[0]) #Set best_distance to the length of first path
     best_path = mating_pool[0] #Set best_path to the first path
     for path in mating_pool:
-        if CalculateEuclideanFitness(path) < best_distance:
-            best_distance = CalculateEuclideanFitness(path) #Find the shortest length path in the mating pool
+        if calculate_euclidean_fitness(path) < best_distance:
+            best_distance = calculate_euclidean_fitness(path) #Find the shortest length path in the mating pool
             best_path = path
     return best_path
 
-def PerformCrossOver(mating_pool):
+def perform_cross_over(mating_pool):
     """
     Performs cross over and returns updated mating pool
     Inputs:
@@ -59,18 +59,18 @@ def PerformCrossOver(mating_pool):
     second_parent = mating_pool.pop(0) #Second element in mating pool (remove)
     first_index = math.floor(len(first_parent)/3) - 1 
     second_index = first_index + math.ceil(len(first_parent)/3) - 1 
-    child = CrossOver(first_parent,second_parent,first_index,second_index) 
+    child = crossover(first_parent,second_parent,first_index,second_index) 
     mating_pool.append(child) #Add child to back of mating pool
     mating_pool.append(first_parent) #Re-add removed parent to back of mating pool
     mating_pool.append(second_parent) #Re-add removed parent to back of mating pool
     mutation_rate = 1/(len(mating_pool[0])-1) #Mutation rate is set to 1/number of cities
     random_chance = random.random() #Random number betwen 0 and 1
     if random_chance < mutation_rate: 
-        mutated_path = MutatePath(child)
+        mutated_path = mutate_path(child)
         mating_pool.append(mutated_path)
     return mating_pool
     
-def CheckValidPath(path, parent):
+def check_valid_path(path, parent):
     """
     Checks and corrects path
     Inputs:
@@ -106,7 +106,7 @@ def CheckValidPath(path, parent):
         path.append(path[0])
         return path
         
-def CrossOver(parent1, parent2, start_index, end_index):
+def crossover(parent1, parent2, start_index, end_index):
     """
     Implements a two-point crossover. Choose the subarray from parent1 starting at start_index and ending at end_index. Choose the rest of the sequence from parent2. 
     Inputs:
@@ -122,10 +122,10 @@ def CrossOver(parent1, parent2, start_index, end_index):
     end_sub_array = parent2[end_index+1:-1]
     sub_array = begin_sub_array + mid_sub_array + end_sub_array 
     sub_array.append(parent2[-1]) #Re-add beginning city to have a full cycle
-    sub_array = CheckValidPath(sub_array[:-1], parent2[:-1]) #Check to see if the path has no repeats
+    sub_array = check_valid_path(sub_array[:-1], parent2[:-1]) #Check to see if the path has no repeats
     return sub_array
 
-def CreateOutput(path):
+def create_output(path):
     """
     This function creates output.txt or overwrites if already exists with the solution.
     Inputs:
@@ -134,14 +134,14 @@ def CreateOutput(path):
         text file: Text file in required format of path length and path
     """
     with open ("output.txt","w") as output_file:
-        output_file.write(str(CalculateEuclideanFitness(path)))
+        output_file.write(str(calculate_euclidean_fitness(path)))
         output_file.write("\n")
         for index,city in enumerate(path):
             output_file.write(city)
             if index != len(path) - 1:
                 output_file.write("\n") #Do not add endline element to last element
 
-def CreateRankList(population):
+def create_rank_list(population):
     """
     This function creates the rank list.
     Inputs:
@@ -151,10 +151,10 @@ def CreateRankList(population):
     """
     rank_list = []
     for index,path in enumerate(population):
-        rank_list.append((index,-CalculateEuclideanFitness(path))) #Negative number due to being a fitness function and needing to be in descending order (larger is better)
+        rank_list.append((index,-calculate_euclidean_fitness(path))) #Negative number due to being a fitness function and needing to be in descending order (larger is better)
     return sorted(rank_list,key = lambda x:x[1], reverse = True) #Sorted by descending order based on second element in tuple (fitness score)
 
-def CalculateEuclideanFitness(path):
+def calculate_euclidean_fitness(path):
     """
     This function acts as a fitness function and returns the total euclidean distance of a given path (negative for fitness function)
     Inputs:
@@ -169,7 +169,7 @@ def CalculateEuclideanFitness(path):
         total_distance = total_distance + np.linalg.norm(first_city-second_city)
     return total_distance
 
-def CreateMatingPool(population, RankList):
+def create_mating_pool(population, RankList):
     """
     This function defines the best fit individuals and selects them for breeding. Implements a roulette wheel-based selection which is a widely used and most efficient method for selecting parents.
     Inputs:
@@ -193,7 +193,7 @@ def CreateMatingPool(population, RankList):
                 break
     return mating_pool
 
-def CreateInitialPopulation(size,cities):
+def create_initial_population(size,cities):
     """
     Creates initial populations and return them.
     Inputs:
@@ -211,7 +211,7 @@ def CreateInitialPopulation(size,cities):
         permutation = copy.deepcopy(cities) #Reset permutations
     return initial_population
 
-def CalculateNearestNeighborDistance(city1,city2):
+def calculate_nearest_neighbor_distance(city1,city2):
     """
     Calculates the distance between 2 cities
     Inputs:
@@ -224,7 +224,7 @@ def CalculateNearestNeighborDistance(city1,city2):
     second_city = np.array(list(map(int,(city2.split(" "))))) #Basically changing ['1 2 3'] to [1,2,3]
     return np.linalg.norm(first_city-second_city) 
 
-def CreateNearestNeighborInitialPopulation(size,cities):
+def create_nearest_neighbor_initial_population(size,cities):
     """
     Creates initial populations using the nearest neighbor algorithm and return them. First finds a random city, and then finds nearest neighbors for that path.
     Inputs:
@@ -245,7 +245,7 @@ def CreateNearestNeighborInitialPopulation(size,cities):
             nearest_neighbor = None
             nearest_neighbor_index = -1
             for city_index in to_visit_indexs:
-                current_distance = CalculateNearestNeighborDistance(cities[current_city_index],cities[city_index]) #Nearest neighbor distance
+                current_distance = calculate_nearest_neighbor_distance(cities[current_city_index],cities[city_index]) #Nearest neighbor distance
                 if current_distance < nearest_neighbor_distance: #Keep track of smallest path length
                     nearest_neighbor_distance = current_distance
                     nearest_neighbor = cities[city_index]
@@ -275,27 +275,27 @@ def read_inputs():
             all_cities.append(city)
     return all_cities
 
-def RandomInitialPopulationMain():
+def random_initial_population_main():
     size = 25000
     cities = read_inputs()
-    initial_population = CreateInitialPopulation(size,cities)
-    rank_list = CreateRankList(initial_population)
-    mating_pool = CreateMatingPool(initial_population,rank_list)
+    initial_population = create_initial_population(size,cities)
+    rank_list = create_rank_list(initial_population)
+    mating_pool = create_mating_pool(initial_population,rank_list)
     for _ in range(10000):
-        mating_pool = PerformCrossOver(mating_pool)
-    best_path = FindBestAnswer(mating_pool)
-    CreateOutput(best_path)
+        mating_pool = perform_cross_over(mating_pool)
+    best_path = find_best_answer(mating_pool)
+    create_output(best_path)
 
 def main():
     size = 550
     cities = read_inputs()
-    initial_population = CreateNearestNeighborInitialPopulation(size,cities)
-    rank_list = CreateRankList(initial_population)
-    mating_pool = CreateMatingPool(initial_population,rank_list)
-    FindAndWrite(mating_pool)
-    for _ in range(1000):
-        mating_pool = PerformCrossOver(mating_pool)
-    FindAndWrite(mating_pool)
+    initial_population = create_nearest_neighbor_initial_population(size,cities)
+    rank_list = create_rank_list(initial_population)
+    mating_pool = create_mating_pool(initial_population,rank_list)
+    find_path_and_write(mating_pool)
+    for _ in range(700):
+        mating_pool = perform_cross_over(mating_pool)
+    find_path_and_write(mating_pool)
     
 if __name__ == "__main__":
     main()
