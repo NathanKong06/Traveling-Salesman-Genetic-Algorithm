@@ -293,7 +293,7 @@ def main():
     rank_list = create_rank_list(initial_population)
     mating_pool = create_mating_pool(initial_population,rank_list)
     find_path_and_write(mating_pool)
-    for _ in range(700):
+    for _ in range(800):
         mating_pool = perform_cross_over(mating_pool)
     find_path_and_write(mating_pool)
     
