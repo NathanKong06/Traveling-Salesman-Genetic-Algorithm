@@ -3,6 +3,17 @@ import copy
 import math
 import numpy as np
 
+def FindAndWrite(mating_pool):
+    """
+    Finds best solution in mating pool and outputs to file
+    Inputs:
+        mating_pool: Mating pool to search through
+    Outputs:
+        N/A
+    """
+    best_path = FindBestAnswer(mating_pool)
+    CreateOutput(best_path)
+
 def MutatePath(path):
     """
     Mutates a path
@@ -281,10 +292,10 @@ def main():
     initial_population = CreateNearestNeighborInitialPopulation(size,cities)
     rank_list = CreateRankList(initial_population)
     mating_pool = CreateMatingPool(initial_population,rank_list)
-    for _ in range(1100):
+    FindAndWrite(mating_pool)
+    for _ in range(1000):
         mating_pool = PerformCrossOver(mating_pool)
-    best_path = FindBestAnswer(mating_pool)
-    CreateOutput(best_path)
+    FindAndWrite(mating_pool)
     
 if __name__ == "__main__":
     main()
